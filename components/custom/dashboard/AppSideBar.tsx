@@ -15,6 +15,7 @@ import { Archive, Layout, LayoutGrid, Settings, Sparkle, User } from "lucide-rea
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
+import CreateNewBoardDialog from "./CreateNewBoardDialog"
 
 export function AppSidebar() {
     const path = usePathname()
@@ -30,7 +31,7 @@ export function AppSidebar() {
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-                    <Button>+ Create New Board</Button>
+                    <CreateNewBoardDialog/>
                 </SidebarGroup>
                 <SidebarGroup>
                     <SidebarGroupLabel>My label</SidebarGroupLabel>
@@ -72,13 +73,17 @@ export function AppSidebar() {
                 </SidebarGroup>
             </SidebarContent>
             <SidebarFooter>
-                <Button>+ Create New Board</Button>
+                <CreateNewBoardDialog/>
                 <div className="p-4 my-3 ">
                     <h2 className="text-sm flex justify-between">2 files created <span>Total 3</span></h2>
                     <Progress value={66} className="h-2 mt-2" />
                 </div>
-                <div className="flex items-center gap-2 p-4   rounded-md">
-                    <Image src={user?.imageUrl ?? ''} alt="Logo" width={50} height={50}  className="rounded-full"/>
+                <div className="flex items-center gap-2 p-4 border rounded-md">
+                    {user?.imageUrl ? (
+                        <Image src={user.imageUrl} alt="Logo" width={50} height={50} className="rounded-full" />
+                    ) : (
+                        <div className="w-[50px] h-[50px] rounded-full bg-muted animate-pulse" />
+                    )}
                     <h2>{user?.firstName} {user?.lastName}</h2>
                 </div>
 
