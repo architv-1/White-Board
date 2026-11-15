@@ -10,25 +10,46 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { Loader2, Plus } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/components/ui/toast'
+import axios from 'axios'
+import { useRouter } from 'next/navigation'
 function CreateNewBoardDialog() {
 
     const [workspaceName, setWorkspaceName] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [dialog, setDialog] = useState(false)
+    const route = useRouter()
 
-    const handleCreateBoard = () => {
+    const handleCreateBoard = async() => {
         if (workspaceName.trim() === "" || workspaceName.length > 30) {
             toast.add({
                 type: "error",
                 title: "Invalid Workspace Name",
                 description: "Please Enter Valid Workspace Name (1-30 character)",
             })
+            return 
         }
+        setLoading(true)
+        const projectId = crypto.randomUUID()
+        const result = await axios.post("/api/projects",{
+            projectName: workspaceName,
+            projectId: projectId
+        })
+
+        console.log(result?.data)
+        toast.add({
+            type: "success",
+            title: "New Workspace Created",
+        })
+        setLoading(false)
+        setDialog(false)
+        route.push(`/workspace/${projectId}`)
     }
     return (
         <div>
-            <Dialog>
+            <Dialog open={dialog} onOpenChange={setDialog}>
                 <DialogTrigger
                     render={
                         <Button className="w-full">
@@ -48,7 +69,9 @@ function CreateNewBoardDialog() {
 
                     <DialogFooter>
                         <DialogClose render={<Button variant="outline">Cancel</Button>} />
-                        <Button disabled={workspaceName?.length===0} onClick={handleCreateBoard}>Create</Button>
+                        <Button disabled={workspaceName?.length===0 || loading} onClick={handleCreateBoard}>
+                            {loading&& <Loader2 className="mr-2 h-4 w-4 animate-spin" /> }Create
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
 
